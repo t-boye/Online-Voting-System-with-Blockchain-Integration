@@ -1,27 +1,24 @@
 const express = require('express');
-const router = express.Router();
+const router = express.Router(); // Import the Router
+
+// Import the Candidate model (assuming it's defined in a separate file)
 const Candidate = require('../models/Candidate');
 
-// Register a candidate
-router.post('/register', async (req, res) => {
-    try {
-        const { name, address } = req.body;
-        const newCandidate = new Candidate({ name, address });
-        const savedCandidate = await newCandidate.save();
-        res.status(201).json(savedCandidate);
-    } catch (error) {
-        res.status(500).json({ error: 'Error registering candidate' });
-    }
-});
+// Validation middleware (optional, but recommended)
+const validateCandidate = require('../middleware/validateCandidate'); // Import validation logic
 
-// Get all candidates
-router.get('/', async (req, res) => {
-    try {
-        const candidates = await Candidate.find();
-        res.json(candidates);
-    } catch (error) {
-        res.status(500).json({ error: 'Error fetching candidates' });
+router.post('/register', validateCandidate, async (req, res) => {
+  try {
+    const newCandidate = new Candidate(req.body);
+    const savedCandidate = await newCandidate.save();
+    res.status(201).json(savedCandidate);
+  } catch (error) {
+    if (error.code === 11000) { // Handle unique index violation
+      return res.status(400).json({ error: 'Index number already exists' });
     }
+    console.error(error); // Log the error for debugging purposes
+    res.status(500).json({ error: 'Error registering candidate' });
+  }
 });
 
 module.exports = router;

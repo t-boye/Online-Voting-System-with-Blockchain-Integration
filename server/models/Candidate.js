@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const candidateSchema = new mongoose.Schema({
     name: { type: String, required: true },
-    address: { type: String, required: true } // For blockchain integration
+    indexNumber: { type: String, required: true, unique: true } 
 });
 
 module.exports = mongoose.model('Candidate', candidateSchema);

@@ -1,29 +1,25 @@
 const express = require('express');
 const router = express.Router();
 const Vote = require('../models/Vote');
-// ... (Blockchain interaction code will be added here)
 
-// Cast a vote
 router.post('/castVote', async (req, res) => {
-    try {
-        const { voterAddress, candidateAddress } = req.body;
-        const newVote = new Vote({ voterAddress, candidateAddress });
-        const savedVote = await newVote.save();
-        // ... (Call the blockchain contract's 'castVote' function)
-        res.status(201).json(savedVote);
-    } catch (error) {
-        res.status(500).json({ error: 'Error casting vote' });
-    }
-});
+  try {
+    const { voterIndex, candidateIndex } = req.body;
 
-// Get all votes
-router.get('/', async (req, res) => {
-    try {
-        const votes = await Vote.find();
-        res.json(votes);
-    } catch (error) {
-        res.status(500).json({ error: 'Error fetching votes' });
+    // Check if the voter has already voted (optional)
+    const existingVote = await Vote.findOne({ voterIndex });
+    if (existingVote) {
+      return res.status(400).json({ error: 'Voter has already cast a vote.' });
     }
+
+    const newVote = new Vote({ voterIndex, candidateIndex });
+    const savedVote = await newVote.save();
+
+    res.status(201).json({ message: 'Vote cast successfully.' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error casting vote.' });
+  }
 });
 
 module.exports = router;

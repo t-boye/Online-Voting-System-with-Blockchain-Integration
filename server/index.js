@@ -20,10 +20,14 @@ mongoose.connect(process.env.MONGODB_URI, {
 .then(() => console.log('MongoDB connected'))
 .catch(err => console.error(err));
 
-// Define routes (example)
-app.use('/api/voters', require('./routes/voterRoutes'));
-app.use('/api/candidates', require('./routes/candidateRoutes'));
-app.use('/api/votes', require('./routes/voteRoutes'));
+// Define routes
+const voterRoutes = require('./routes/voterRoutes');
+const candidateRoutes = require('./routes/candidateRoutes');
+const voteRoutes = require('./routes/voteRoutes');
+
+app.use('/api/voters', voterRoutes); 
+app.use('/api/candidates', candidateRoutes);
+app.use('/api/votes', voteRoutes);
 
 app.listen(port, () => {
     console.log(`Server listening on port ${port}`);

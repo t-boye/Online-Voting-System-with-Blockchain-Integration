@@ -1,10 +1,10 @@
-// server/models/Voter.js
 const mongoose = require('mongoose');
 
 const voterSchema = new mongoose.Schema({
-    name: { type: String, required: true },
-    address: { type: String, required: true }, // For blockchain integration
-    hasVoted: { type: Boolean, default: false }
+    voterId: { type: String, required: true, unique: true },
+    hashedData: { type: String, required: true },
+    blockchainTxHash: { type: String, required: true },
+    // ... other fields (optional)
 });
 
 module.exports = mongoose.model('Voter', voterSchema);
